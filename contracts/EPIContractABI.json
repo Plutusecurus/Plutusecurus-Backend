@@ -1,0 +1,122 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_transactionId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_dateTime",
+        "type": "string"
+      }
+    ],
+    "name": "depositETH",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_transactionId",
+        "type": "string"
+      }
+    ],
+    "name": "getTransactionById",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "transactionId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "dateTime",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Transactions.Transaction",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "_transactionId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_dateTime",
+        "type": "string"
+      }
+    ],
+    "name": "transactionETHtoETH",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_transactionId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_dateTime",
+        "type": "string"
+      }
+    ],
+    "name": "transferETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
