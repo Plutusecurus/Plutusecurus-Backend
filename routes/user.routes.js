@@ -47,9 +47,11 @@ userRouter.post('/add-expense', userController.addExpense);
 
 userRouter.post('/add-income', userController.addIncome);
 
+userRouter.post('/addINRToWallet', isAuth, userController.addINRToWallet);
+
 userRouter.post('/transactions', userController.getAllTransactions);
 
-// userRouter.post('/createPaymentOrder', userController.createPaymentOrder);
+userRouter.post('/createRazorpayPaymentOrder', userController.createRazorpayPaymentOrder);
 
 userRouter.post('/createETHtoINROrder', userController.createETHtoINROrder)
 

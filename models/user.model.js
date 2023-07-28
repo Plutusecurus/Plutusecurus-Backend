@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    walletAmount: {
+        type: Number,
+        default: 0
+    },
     earning: {
         type: Number,
         default: 0

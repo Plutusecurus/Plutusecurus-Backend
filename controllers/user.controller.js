@@ -81,7 +81,7 @@ exports.loginUser = async (req, res) => {
 
         const token = jwt.sign({
             userId: existingUser._id.toString(),
-            address: existingUser.address
+            address: existingUser.account
         }, process.env.JWT_SECRET, { expiresIn: '30d' })
 
         return res.status(201).json({
@@ -200,6 +200,42 @@ const createPaymentOrder = async (amount, currency) => {
     if(result) return result
 
     return null
+}
+
+exports.createRazorpayPaymentOrder = async(req,res) => {
+    const {amount, currency} = req.body
+
+    try {
+        const paymentOrder = await createPaymentOrder(Math.round(amount), currency)
+        if(paymentOrder) return res.status(200).json({...paymentOrder})
+
+        return res.status(500).json({success:false, message:'Could not create Razorpay Payment Order for this request.'})
+    } catch(e) {
+        console.log(e)
+        return res.status(e.status|500).json({success: false, message:e.message})
+    }
+}
+
+exports.addINRToWallet = async(req,res) => {
+    try {
+        const {amountInINR} = req.body
+
+        if(!amountInINR) return res.status(400).json({message: 'Amount is required!'})
+
+        const publicAddress = req.publicAddress
+        const existingUser = await User.findOne({account: publicAddress})
+        if(!existingUser) return res.status(404).json({message: 'User is not registered!'})
+
+        const existingWalletAmt = existingUser.walletAmount ?? 0
+        existingUser.walletAmount = existingWalletAmt + amountInINR
+        await existingUser.save()
+
+        return res.status(201).json({message: 'User wallet amount updated!', newWalletAmount: existingUser.walletAmount})
+
+    } catch(e) {
+        console.log(e)
+        return res.status(e.status|500).json(e)
+    }
 }
 
 exports.createETHtoINROrder = async (req, res) => {

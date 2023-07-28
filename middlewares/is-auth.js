@@ -22,7 +22,7 @@ module.exports = (req, res, next) => {
         error.statusCode = 401
         throw error
     }
-    req.publicAddress = decodedToken.publicAddress
+    req.publicAddress = decodedToken.address
     req.userId = decodedToken.userId
     next()
 }
