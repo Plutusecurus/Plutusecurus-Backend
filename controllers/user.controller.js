@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user.model');
 const Transaction = require('../models/transaction.model')
 const CC = require('currency-converter-lt')
+const Razorpay = require('razorpay')
 
 exports.registerUser = async (req, res) => {
     try {
@@ -173,6 +174,52 @@ exports.getAllTransactions = async (req, res) => {
     }
 }
 
+const createPaymentOrder = async (amount, currency) => {
+    if(!amount || !currency) {
+        const error = new Error()
+        error.statusCode = 400
+        error.message = 'Both amount and currency are required!'
+        throw error
+    }
+
+    const keyId = process.env.RAZORPAY_KEY_ID
+    const keySecret = process.env.RAZORPAY_KEY_SECRET
+
+    var instance = new Razorpay({ key_id: keyId, key_secret: keySecret })
+
+    const result = await instance.orders.create({
+        amount: amount,
+        currency: currency,
+        receipt: `receipt#${new Date().getTime()}`,
+        // notes: {
+        //     key1: "",
+        //     key2: ""
+        // }
+    })
+
+    if(result) return result
+
+    return null
+}
+
+exports.createETHtoINROrder = async (req, res) => {
+    const {amount, currency} = req.body
+
+    try {
+        let currencyConverter = new CC({from:"ETH", to:"INR", amount:amount})
+        const amountInINR = await currencyConverter.convert()
+
+        const ethToINROrder = await createPaymentOrder(amountInINR, currency)
+
+        if(ethToINROrder) return res.status(200).json({ethToINROrder})
+
+        return res.status(500).json({ success: false, message: "ETH-to-INR Order could not be created!" })
+    } catch(err) {
+        console.log(err)
+        return res.status(500).json({ success:false, message:err.message })
+    }
+}
+
 exports.convertINRtoETH = async (req, res) => {
     const amount = req.body.amount
 
@@ -182,20 +229,6 @@ exports.convertINRtoETH = async (req, res) => {
 
         return res.status(200).json({ success: true, amount: amountInETH })
 
-    } catch(err) {
-        console.log(err)
-        return res.status(500).json({ success:false, message:err.message })
-    }
-}
-
-exports.convertETHtoINR = async (req, res) => {
-    const amount = req.body.amount
-
-    try {
-        let currencyConverter = new CC({from:"ETH", to:"INR", amount:amount})
-        const amountInINR = await currencyConverter.convert()
-
-        return res.status(200).json({ success: true, amount: amountInINR })
     } catch(err) {
         console.log(err)
         return res.status(500).json({ success:false, message:err.message })

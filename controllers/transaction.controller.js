@@ -67,6 +67,7 @@ exports.transactETHtoETH = async (data) => {
     }
 }
 
+// sender---inr---->plutusecurus-----eth---->recipient
 exports.transactINRtoETH = async(data) => {
     const { senderPublicAddress, senderPrivateKey, recipientPublicAddress, amountInETH, remark, paymentId } = data
     let transactionId

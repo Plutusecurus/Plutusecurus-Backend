@@ -49,7 +49,9 @@ userRouter.post('/add-income', userController.addIncome);
 
 userRouter.post('/transactions', userController.getAllTransactions);
 
-userRouter.post('/convertETHtoINR', userController.convertETHtoINR)
+userRouter.post('/createPaymentOrder', userController.createPaymentOrder);
+
+userRouter.post('/createETHtoINROrder', userController.createETHtoINROrder)
 
 userRouter.post('/convertINRtoETH', userController.convertINRtoETH)
 

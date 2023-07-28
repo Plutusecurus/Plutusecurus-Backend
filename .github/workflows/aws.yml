@@ -83,6 +83,8 @@ jobs:
         echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
         echo "SEPOLIA_RPC_URL=${{ secrets.SEPOLIA_RPC_URL }}" >> .env
         echo "SEPOLIA_CONTRACT_ADDRESS=${{ secrets.SEPOLIA_CONTRACT_ADDRESS }}" >> .env
+        echo "RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }}" >> .env
+        echo "RAZORPAY_KEY_SECRET=${{ secrets.RAZORPAY_KEY_SECRET }}" >> .env
 
     - name: Build, Tag, and Push the Image to Amazon ECR
       id: build-image
