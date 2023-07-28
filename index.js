@@ -16,7 +16,7 @@ connect();
 const userRouter = require('./routes/user.routes');
 
 app.get('/', (req, res) => {
-    res.send('Server running for codebase: 28 July, 2023.');
+    res.send('Server running for codebase: 28th July, 2023.');
 });
 
 app.use('/user', userRouter);
