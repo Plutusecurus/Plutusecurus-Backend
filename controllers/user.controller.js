@@ -209,9 +209,9 @@ exports.createETHtoINROrder = async (req, res) => {
         let currencyConverter = new CC({from:"ETH", to:"INR", amount:amount})
         const amountInINR = await currencyConverter.convert()
 
-        const ethToINROrder = await createPaymentOrder(amountInINR, currency)
+        const ethToINROrder = await createPaymentOrder(Math.round(amountInINR), currency)
 
-        if(ethToINROrder) return res.status(200).json({ethToINROrder})
+        if(ethToINROrder) return res.status(200).json({...ethToINROrder})
 
         return res.status(500).json({ success: false, message: "ETH-to-INR Order could not be created!" })
     } catch(err) {

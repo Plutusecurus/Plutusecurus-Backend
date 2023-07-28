@@ -49,7 +49,7 @@ userRouter.post('/add-income', userController.addIncome);
 
 userRouter.post('/transactions', userController.getAllTransactions);
 
-userRouter.post('/createPaymentOrder', userController.createPaymentOrder);
+// userRouter.post('/createPaymentOrder', userController.createPaymentOrder);
 
 userRouter.post('/createETHtoINROrder', userController.createETHtoINROrder)
 
