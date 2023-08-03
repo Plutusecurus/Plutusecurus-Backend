@@ -67,7 +67,6 @@ exports.transactETHtoETH = async (data) => {
     }
 }
 
-// sender---inr---->plutusecurus-----eth---->recipient
 exports.transactINRtoETH = async(data) => {
     const { senderPublicAddress, senderPrivateKey, recipientPublicAddress, amountInETH, remark, paymentId } = data
     let transactionId
@@ -122,5 +121,74 @@ exports.transactINRtoETH = async(data) => {
         console.log(err)
         await Transaction.deleteOne({_id:transactionId})
         io.emit(senderPublicAddress, { status: 'FailureI2E', data: `${err.message}` })
+    }
+}
+
+exports.transactETHtoINR = async (data) => {
+    const { senderPublicAddress, senderPrivateKey, recipientPublicAddress, amount, remark } = data
+    var transactionId
+
+    try {
+        const sender = await User.findOne({account:senderPublicAddress})
+        const recipient = await User.findOne({account:recipientPublicAddress})
+
+        if(!sender) {
+            const error = new Error(`Sender with public address: ${senderPublicAddress} not found.`)
+            error.statusCode = 404
+            throw error
+        }
+
+        if(!recipient) {
+            const error = new Error(`Recipient with public address: ${recipientPublicAddress} not found.`)
+            error.statusCode = 404
+            throw error
+        }
+
+        let currencyConverter = new CC({from:"ETH", to:"INR", amount:amount})
+        const amountInINR = await currencyConverter.convert()
+
+        if(amountInINR>sender.walletAmount) {
+            const error = new Error(`Transaction amount exceeds wallet amount. (Transaction amount: INR ${amountInINR} (ETH ${amount}); Wallet Amount: INR ${sender.walletAmount})`)
+            error.status = 400
+            throw error
+        }
+
+        const transaction = new Transaction({
+            sender: sender._id,
+            recipient: recipient._id,
+            eth: amount,
+            inr: amountInINR,
+            remark: remark
+        })
+
+        const transactionResult = await transaction.save()
+        io.emit(senderPublicAddress, { status: 'TransactionId-E2I', data: transactionResult._id.toString() })
+        const contract = getContract(senderPrivateKey)
+
+        transactionId = transactionResult._id
+        const dateTime = transactionResult.createdAt.toString();
+
+        const overrides = {
+            value: ethers.utils.parseEther(amount.toString()),
+        }
+
+        const tx = await contract.depositETH(transactionId.toString(), dateTime, overrides);
+        const receipt = await tx.wait(); 
+
+        io.emit(senderPublicAddress, { status: 'TransactionHash-E2I', data: receipt.transactionHash })
+
+        sender.spending[remark] = sender.spending[remark] + amountInINR
+        sender.walletAmount = sender.walletAmount - amountInINR
+        recipient.earning = recipient.earning + amountInINR
+        recipient.walletAmount = recipient.walletAmount + amountInINR
+        const recipientRes = await recipient.save()
+        const senderRes = await sender.save()
+
+        io.emit(senderPublicAddress, { status: 'Success-E2I', data: `${senderRes._id.toString()} ${recipientRes._id.toString()}` })
+    } catch(err) {
+        console.log(err)
+        await Transaction.deleteOne({_id: transactionId})
+        io.emit(senderPublicAddress, { status: 'Failure-E2I', data: err.message })
+        
     }
 }

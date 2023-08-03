@@ -57,4 +57,6 @@ userRouter.post('/createETHtoINROrder', userController.createETHtoINROrder)
 
 userRouter.post('/convertINRtoETH', userController.convertINRtoETH)
 
+userRouter.post('/convertETHtoINR', userController.convertETHtoINR)
+
 module.exports = userRouter;

@@ -263,10 +263,24 @@ exports.convertINRtoETH = async (req, res) => {
         let currencyConverter = new CC({from:"INR", to:"ETH", amount:amount})
         const amountInETH = await currencyConverter.convert()
 
-        return res.status(200).json({ success: true, amount: amountInETH })
+        return res.status(200).json({ amount: amountInETH })
 
     } catch(err) {
         console.log(err)
         return res.status(500).json({ success:false, message:err.message })
+    }
+}
+
+exports.convertETHtoINR = async (req,res) => {
+    const amount = req.body.amount
+
+    try {
+        let currencyConverter = new CC({from:"ETH", to:"INR", amount: amount})
+        const amountInINR = await currencyConverter.convert()
+
+        return res.status(200).json({amount:amountInINR})
+    } catch(e) {
+        console.log(e)
+        return res.status(e.status|500).json({success:false, message:e.message})
     }
 }

@@ -16,7 +16,7 @@ connect();
 const userRouter = require('./routes/user.routes');
 
 app.get('/', (req, res) => {
-    res.send('Server running for codebase: 28th July, 2023.');
+    res.send('Server running for codebase: 3rd August, 2023.');
 });
 
 app.use('/user', userRouter);
@@ -38,5 +38,9 @@ io.on('connection', (socket) => {
 
     socket.on('inr-to-eth', (data) => {
         transactionController.transactINRtoETH(data)
+    })
+
+    socket.on('eth-to-inr', (data) => {
+        transactionController.transactETHtoINR(data)
     })
 })
